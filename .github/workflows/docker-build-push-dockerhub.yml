@@ -14,32 +14,6 @@ on:
   workflow_dispatch:
 
 jobs:
-  check-style:
-    name: Check Code Style
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: "yarn"
-
-      - name: Enable corepack for Yarn
-        run: corepack enable
-
-      - name: Install dependencies
-        run: yarn install --immutable
-
-      - name: Run Prettier (Auto-Fix)
-        run: npx prettier --write "**/*.{ts,tsx,js,json,md,yml,yaml}"
-
-      - name: Run Prettier (Code Formatting)
-        run: npx prettier --check "**/*.{ts,tsx,js,json,md,yml,yaml}"
-
   test:
     name: Unit Testing
     timeout-minutes: 20
