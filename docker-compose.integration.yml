@@ -41,8 +41,8 @@ services:
       - test-database
       - wiremock
     volumes:
-      - ./tests:/tests  # Mounts the tests folder
-    working_dir: /tests  # Ensures correct working directory
-    command: [ "sh", "-c", "npm install && npx playwright install-deps && npm test" ]
+      - ./tests:/tests  # Ensure tests folder is mounted properly
+    working_dir: /tests  # Ensure correct working directory
+    command: [ "sh", "-c", "ls -la /tests && npm install && npx playwright install-deps && npm test" ]
     networks:
       - integration-stack
