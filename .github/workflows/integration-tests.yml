@@ -15,15 +15,18 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: Debug Repository Path
+        run: ls -la && pwd
+
       - name: Start Services (Database & WireMock)
-        run: docker-compose -f docker-compose.integration.yml up -d test-database wiremock
+        run: docker compose -f docker-compose.integration.yml up -d test-database wiremock
 
       - name: Wait for Database & WireMock to be Ready
         run: sleep 10  # Ensures services are fully initialized
 
       - name: Run Integration Tests
-        run: docker-compose -f docker-compose.integration.yml up --abort-on-container-exit test-runner
+        run: docker compose -f docker-compose.integration.yml up --abort-on-container-exit test-runner
 
       - name: Cleanup
         if: always()
-        run: docker-compose -f docker-compose.integration.yml down --remove-orphans
+        run: docker compose -f docker-compose.integration.yml down --remove-orphans
