@@ -35,17 +35,14 @@ services:
     command: --verbose
 
   test-runner:
-    image: mcr.microsoft.com/playwright:v1.50.1-jammy  # Updated to match your Playwright version
+    image: mcr.microsoft.com/playwright:v1.50.1-jammy
     container_name: test-runner
     depends_on:
       - test-database
       - wiremock
     volumes:
-      - ./tests:/tests
-      - ./package.json:/tests/package.json
-      - ./package-lock.json:/tests/package-lock.json
-      - ./node_modules:/tests/node_modules
-    working_dir: /tests
-    command: [ "sh", "-c", "npm install && npx playwright install-deps && npx playwright test booking-references.test.js" ]
+      - ./tests:/tests  # Mounts the tests folder
+    working_dir: /tests  # Ensures correct working directory
+    command: [ "sh", "-c", "npm install && npx playwright install-deps && npm test" ]
     networks:
       - integration-stack
