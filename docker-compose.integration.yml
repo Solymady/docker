@@ -1,0 +1,51 @@
+volumes:
+  test-database-data:
+
+networks:
+  integration-stack:
+    name: integration-stack
+    external: false
+
+services:
+  # Integration Test Database
+  test-database:
+    container_name: test-database
+    image: postgres
+    restart: always
+    volumes:
+      - test-database-data:/var/lib/postgresql/data/
+    env_file: .env
+    networks:
+      - integration-stack
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+
+  # Mock External API - WireMock
+  wiremock:
+    image: wiremock/wiremock
+    container_name: wiremock
+    ports:
+      - "8081:8080"
+    networks:
+      - integration-stack
+    volumes:
+      - ./mocks:/home/wiremock
+    command: --verbose
+
+  test-runner:
+    image: mcr.microsoft.com/playwright:v1.50.1-jammy  # Updated to match your Playwright version
+    container_name: test-runner
+    depends_on:
+      - test-database
+      - wiremock
+    volumes:
+      - ./tests:/tests
+      - ./package.json:/tests/package.json
+      - ./package-lock.json:/tests/package-lock.json
+      - ./node_modules:/tests/node_modules
+    working_dir: /tests
+    command: [ "sh", "-c", "npm install && npx playwright install-deps && npx playwright test booking-references.test.js" ]
+    networks:
+      - integration-stack
