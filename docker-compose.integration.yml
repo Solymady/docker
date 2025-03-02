@@ -6,6 +6,7 @@ networks:
     name: integration-stack
     external: false
 
+
 services:
   # Integration Test Database
   test-database:
