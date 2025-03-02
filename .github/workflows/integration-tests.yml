@@ -15,22 +15,24 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set Up Docker
+      - name: Install Docker Compose
         run: |
           sudo apt-get update
-          sudo apt-get install -y docker-compose-plugin
-          docker --version
-          docker compose version
+          sudo apt-get install -y curl
+          curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+          ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+          docker-compose version
 
       - name: Start Services (Database & WireMock)
-        run: docker compose -f docker-compose.integration.yml up -d test-database wiremock
+        run: docker-compose -f docker-compose.integration.yml up -d test-database wiremock
 
       - name: Wait for Database & WireMock to be Ready
         run: sleep 10  # Ensures services are fully initialized
 
       - name: Run Integration Tests
-        run: docker compose -f docker-compose.integration.yml up --abort-on-container-exit test-runner
+        run: docker-compose -f docker-compose.integration.yml up --abort-on-container-exit test-runner
 
       - name: Cleanup
         if: always()
-        run: docker compose -f docker-compose.integration.yml down --remove-orphans
+        run: docker-compose -f docker-compose.integration.yml down --remove-orphans
