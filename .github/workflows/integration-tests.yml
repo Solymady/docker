@@ -18,9 +18,6 @@ jobs:
       - name: Debug Repository Structure
         run: ls -la tests/
 
-      - name: Debug Inside Docker
-        run: docker compose -f docker-compose.integration.yml run test-runner sh -c "ls -la /tests"
-
       - name: Start Services (Database & WireMock)
         run: docker compose -f docker-compose.integration.yml up -d test-database wiremock
 
